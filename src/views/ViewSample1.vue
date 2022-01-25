@@ -88,6 +88,7 @@
 import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import Peer, { DataConnection, PeerConstructorOption, PeerError } from 'skyway-js'
 import InputText from '@/components/InputText.vue'
+import { Dialogs } from '@/dialogs'
 
 type Message = {
   peerId: string
@@ -137,7 +138,7 @@ export default defineComponent({
         console.info(`peer: close`)
       })
       peer.on('error', (err: PeerError) => {
-        console.info(`peer: error > ${JSON.stringify(err)}`)
+        Dialogs.showError(err.message)
       })
       peer.on('connection', (conn: DataConnection) => {
         console.info(`peer: connection`)
@@ -150,8 +151,14 @@ export default defineComponent({
     const clickConnect = async () => {
       const peer = state.peer
       const toPeerId = state.toPeerId
-      if (peer === null || toPeerId.length === 0) {
-        alert('ERROR')
+      if (peer === null) {
+        await Dialogs.showError(
+          'SkyWayの接続準備に失敗しました。ブラウザをリロードして、再度試してみてください',
+        )
+        return
+      }
+      if (toPeerId.length === 0) {
+        await Dialogs.showError('相手のPeerIDを入力して、決定ボタンをクリックしてください')
         return
       }
       const dataConnection = peer.connect(toPeerId)
@@ -167,8 +174,16 @@ export default defineComponent({
       const peerId = state.peerId
       const text = state.text
       const dataConnection = state.dataConnection
-      if (peerId.length === 0 || text.length === 0 || dataConnection === null) {
-        alert('ERROR')
+      if (peerId.length === 0) {
+        await Dialogs.showError('自分のPeerIDを入力して、決定ボタンをクリックしてください')
+        return
+      }
+      if (text.length === 0) {
+        await Dialogs.showError('送信するテキストを入力してください')
+        return
+      }
+      if (dataConnection === null) {
+        await Dialogs.showError('相手のPeerIDを入力して、決定ボタンをクリックしてください')
         return
       }
 
@@ -190,7 +205,7 @@ export default defineComponent({
         console.info(`dataConnection: close`)
       })
       dataConnection.on('error', (err: PeerError) => {
-        console.info(`dataConnection: error > ${JSON.stringify(err)}`)
+        Dialogs.showError(err.message)
       })
       state.toPeerId = dataConnection.remoteId
       state.dataConnection = dataConnection
