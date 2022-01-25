@@ -1,24 +1,22 @@
 <template>
-  <v-app>
-    <AppBar />
-    <v-main>
-      <v-container fluid>
-        <router-view />
-      </v-container>
-    </v-main>
-  </v-app>
+  <div>ViewSample3(APIキー: {{ apiKey }})</div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
-import AppBar from '@/components/AppBar.vue'
 
-type State = {
-  //
+type State = {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type Props = {
+  apiKey: string
 }
 export default defineComponent({
-  components: { AppBar },
+  components: {},
+  props: {
+    apiKey: { type: String, required: true },
+  },
   setup() {
+    // state
     const state = reactive<State>({})
 
     return {
