@@ -99,10 +99,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, isRaw, reactive, toRefs, watch } from '@vue/composition-api'
 import Peer, { DataConnection, PeerConstructorOption, PeerError } from 'skyway-js'
 import InputText from '@/components/InputText.vue'
 import { Dialogs } from '@/dialogs'
+import { LocalStorage } from '@/localStorage'
 
 const Steps = {
   Step1: 1,
@@ -136,7 +137,7 @@ export default defineComponent({
   setup(props: Props) {
     const state = reactive<State>({
       step: Steps.Step1,
-      peerId: '',
+      peerId: LocalStorage.peerId ?? '',
       peer: null,
       toPeerId: '',
       dataConnection: null,
@@ -236,6 +237,13 @@ export default defineComponent({
       state.messages.push(message)
       state.text = ''
     }
+
+    watch(
+      () => state.peerId,
+      (value: string) => {
+        LocalStorage.peerId = value
+      },
+    )
 
     watch(
       () => state.peer,
