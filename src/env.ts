@@ -6,6 +6,6 @@ export class Env {
     if (this.commitHash === null) {
       return null
     }
-    return `https://github.com/t-fujisaka-d1g/template-vue2-pwa/commit/${this.commitHash}`
+    return `https://github.com/t-fujisaka-d1g/webrtc-sample/commit/${this.commitHash}`
   }
 }

@@ -1,4 +1,4 @@
-# テンプレートリポジトリ(Vue2+PWA)
+# WebRTCサンプル
 
 ## Project setup
 ```
