@@ -13,6 +13,15 @@ export class LocalStorage {
     const data: ISettings | null = this.load<ISettings>(Keys.Settings)
     return data === null ? Settings.createDefault() : Settings.create(data)
   }
+  static get apiKey(): string | null {
+    return this.settings.apiKey
+  }
+  static set apiKey(value: string | null) {
+    const settings = this.settings
+    settings.apiKey = value
+    this.settings = settings
+  }
+
   static get peerId(): string | null {
     return this.settings.peerId
   }

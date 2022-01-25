@@ -1,13 +1,14 @@
 import Vue from 'vue'
 import VueRouter, { Route, RouteConfig } from 'vue-router'
-import { RouteNames } from '@/router/models'
+import { RouteLocations, RouteNames } from '@/router/models'
 import ViewHome from '@/views/ViewHome.vue'
+import { LocalStorage } from '@/localStorage'
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/',
+    path: '/login',
     name: RouteNames.Login,
     component: () => import(/* webpackChunkName: "login" */ '../views/ViewLogin.vue'),
   },
@@ -42,6 +43,13 @@ const routes: Array<RouteConfig> = [
     props: (route: Route) => ({
       apiKey: route.params.apiKey,
     }),
+  },
+  {
+    path: '*',
+    redirect: () => {
+      const apiKey = LocalStorage.apiKey
+      return apiKey === null ? RouteLocations.toLogin() : RouteLocations.toHome(apiKey)
+    },
   },
 ]
 
