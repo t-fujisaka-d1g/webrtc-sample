@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, isRaw, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import Peer, { DataConnection, PeerConstructorOption, PeerError } from 'skyway-js'
 import InputText from '@/components/InputText.vue'
 import { Dialogs } from '@/dialogs'
