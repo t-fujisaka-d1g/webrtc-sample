@@ -1,19 +1,14 @@
 <template>
-  <div>ViewHome(APIキー: {{ apiKey }})</div>
+  <div>ViewLogin</div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 
 type State = {}
-type Props = {
-  apiKey: string
-}
+type Props = {}
 export default defineComponent({
   components: {},
-  props: {
-    apiKey: { type: String, required: true },
-  },
   setup() {
     // state
     const state = reactive<State>({})

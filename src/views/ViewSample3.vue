@@ -1,5 +1,5 @@
 <template>
-  <div>ViewHome(APIキー: {{ apiKey }})</div>
+  <div>ViewSample3(APIキー: {{ apiKey }})</div>
 </template>
 
 <script lang="ts">
