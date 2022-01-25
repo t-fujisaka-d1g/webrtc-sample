@@ -15,9 +15,12 @@ export class RouteLocations {
       name: RouteNames.Login,
     }
   }
-  static toHome(): Location {
+  static toHome(apiKey: string): Location {
     return {
       name: RouteNames.Home,
+      params: {
+        apiKey: apiKey,
+      },
     }
   }
   static toSample1(apiKey: string): Location {
