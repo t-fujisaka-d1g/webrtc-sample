@@ -6,6 +6,7 @@
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 
 type State = {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Props = {
   apiKey: string
 }

@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, SetupContext, toRefs } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import AppBar from '@/components/AppBar.vue'
 
 type State = {
@@ -18,7 +18,7 @@ type State = {
 }
 export default defineComponent({
   components: { AppBar },
-  setup(_: unknown, context: SetupContext) {
+  setup() {
     const state = reactive<State>({})
 
     return {
