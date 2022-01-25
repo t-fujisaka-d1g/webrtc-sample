@@ -1,36 +1,36 @@
 <template>
   <div class="view-sample1">
+    <v-banner v-if="dataConnection" single-line outlined rounded color="primary">
+      <div class="text--primary text-body-2">
+        <v-icon icon="mdi-lock" color="primary">mdi-lock</v-icon>
+        「{{ toPeerId }}」とP2P接続しています
+      </div>
+    </v-banner>
+
     <div class="view-sample1__row view-sample1__row--content">
       <v-list two-line width="100%">
         <template v-for="(message, index) in messages">
-          <template v-if="message.peerId === peerId">
-            <v-card
-              v-bind:key="index"
-              outlined
-              style="margin-bottom: 8px; text-align: right"
-              color="blue-grey lighten-5"
-            >
-              <v-card-text>
-                <b>{{ message.peerId }}</b>
-                <br />
-                {{ message.text }}
-              </v-card-text>
-            </v-card>
-          </template>
-          <template v-else>
-            <v-card v-bind:key="index" outlined style="margin-bottom: 8px" color="blue lighten-5">
-              <v-card-text>
-                <b>{{ message.peerId }}</b>
-                <br />
-                {{ message.text }}
-              </v-card-text>
-            </v-card>
-          </template>
+          <v-card
+            v-bind:key="index"
+            outlined
+            style="margin-bottom: 8px"
+            v-bind:style="{
+              'margin-left': message.peerId === peerId ? '32px' : null,
+              'margin-right': message.peerId === peerId ? null : '32px',
+            }"
+            v-bind:color="message.peerId === peerId ? 'blue-grey lighten-5' : 'blue lighten-5'"
+          >
+            <v-card-text>
+              <b>{{ message.peerId }}</b>
+              <br />
+              {{ message.text }}
+            </v-card-text>
+          </v-card>
         </template>
       </v-list>
     </div>
 
-    <v-footer app color="gray" inset style="padding: 16px 8px">
+    <v-footer app color="blue-grey lighten-5" inset style="padding: 16px 8px">
       <v-text-field
         v-model="text"
         background-color="white"
@@ -44,51 +44,72 @@
       />
     </v-footer>
 
-    <v-dialog v-model="displayDialog" width="100%" max-width="480px" persistent>
+    <v-dialog v-model="displayDialog1" width="100%" max-width="480px" persistent>
       <v-card outlined>
         <v-card-title>設定</v-card-title>
-        <v-list dense>
-          <v-list-item>
-            <InputText v-model="apiKey" label="APIキー" disabled />
-            <v-list-item-action>
-              <div style="width: 64px" />
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <InputText v-model="peerId" label="自分のPeerId" v-bind:disabled="peer !== null" />
-            <v-list-item-action>
-              <v-btn color="primary" v-bind:disabled="peer !== null" v-on:click="clickDone1">
-                決定
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <InputText
-              v-model="toPeerId"
-              label="相手のPeerId"
-              v-bind:disabled="dataConnection !== null"
-            />
-            <v-list-item-action>
-              <v-btn
-                color="primary"
-                v-bind:disabled="dataConnection !== null"
-                v-on:click="clickConnect"
-              >
-                接続
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
+        <v-card-text>
+          <InputText v-model="apiKey" label="APIキー" disabled />
+          <InputText v-model="peerId" label="自分のPeerId" v-bind:disabled="peer !== null" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="primary" text v-bind:disabled="peer !== null" v-on:click="clickDone1">
+            <v-icon left>mdi-check</v-icon>
+            決定
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="displayDialog2" width="100%" max-width="280px" persistent>
+      <v-card outlined>
+        <div
+          style="
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            padding: 16px;
+          "
+        >
+          <v-progress-circular v-bind:size="200" width="10" color="primary" indeterminate>
+            接続待機中...
+          </v-progress-circular>
+        </div>
+        <v-divider />
+        <v-card-actions>
+          <InputText
+            v-model="toPeerId"
+            label="相手のPeerId"
+            v-bind:disabled="dataConnection !== null"
+          />
+          <v-btn
+            text
+            color="primary"
+            v-bind:disabled="dataConnection !== null"
+            v-on:click="clickConnect"
+          >
+            接続
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import Peer, { DataConnection, PeerConstructorOption, PeerError } from 'skyway-js'
 import InputText from '@/components/InputText.vue'
 import { Dialogs } from '@/dialogs'
+
+const Steps = {
+  Step1: 1,
+  Step2: 2,
+  Step3: 3,
+} as const
+type Step = typeof Steps[keyof typeof Steps]
 
 type Message = {
   peerId: string
@@ -96,7 +117,7 @@ type Message = {
 }
 // eslint-disable-next-line @typescript-eslint/ban-types
 type State = {
-  displayDialog: boolean
+  step: Step
   peerId: string
   peer: Peer | null
   toPeerId: string
@@ -114,7 +135,7 @@ export default defineComponent({
   },
   setup(props: Props) {
     const state = reactive<State>({
-      displayDialog: true,
+      step: Steps.Step1,
       peerId: '',
       peer: null,
       toPeerId: '',
@@ -123,9 +144,10 @@ export default defineComponent({
       messages: [],
     })
 
-    const clickDone1 = async () => {
-      const peerId = state.peerId
+    const displayDialog1 = computed(() => state.step === Steps.Step1)
+    const displayDialog2 = computed(() => state.step === Steps.Step2)
 
+    const setPeer = async (peerId: string): Promise<void> => {
       const options: PeerConstructorOption = {
         key: props.apiKey,
         debug: 3,
@@ -133,6 +155,7 @@ export default defineComponent({
       const peer = peerId.length >= 1 ? new Peer(peerId, options) : new Peer(options)
       peer.on('open', () => {
         console.info(`peer: open`)
+        state.peer = peer
       })
       peer.on('close', () => {
         console.info(`peer: close`)
@@ -144,8 +167,29 @@ export default defineComponent({
         console.info(`peer: connection`)
         setDataConnection(conn)
       })
+    }
 
-      state.peer = peer
+    const setDataConnection = async (dataConnection: DataConnection) => {
+      dataConnection.on('open', () => {
+        console.info(`dataConnection: open`)
+        state.toPeerId = dataConnection.remoteId
+        state.dataConnection = dataConnection
+      })
+      dataConnection.on('data', (data: Message) => {
+        console.info(`dataConnection: data > ${JSON.stringify(data)}`)
+        state.messages.push(data)
+      })
+      dataConnection.on('close', () => {
+        console.info(`dataConnection: close`)
+      })
+      dataConnection.on('error', (err: PeerError) => {
+        Dialogs.showError(err.message)
+      })
+    }
+
+    const clickDone1 = async () => {
+      const peerId = state.peerId
+      await setPeer(peerId)
     }
 
     const clickConnect = async () => {
@@ -162,7 +206,7 @@ export default defineComponent({
         return
       }
       const dataConnection = peer.connect(toPeerId)
-      setDataConnection(dataConnection)
+      await setDataConnection(dataConnection)
     }
 
     const keydownEnter = async (e: KeyboardEvent) => {
@@ -193,31 +237,20 @@ export default defineComponent({
       state.text = ''
     }
 
-    const setDataConnection = (dataConnection: DataConnection) => {
-      dataConnection.on('open', () => {
-        console.info(`dataConnection: open`)
-      })
-      dataConnection.on('data', (data: Message) => {
-        console.info(`dataConnection: data > ${JSON.stringify(data)}`)
-        state.messages.push(data)
-      })
-      dataConnection.on('close', () => {
-        console.info(`dataConnection: close`)
-      })
-      dataConnection.on('error', (err: PeerError) => {
-        Dialogs.showError(err.message)
-      })
-      state.toPeerId = dataConnection.remoteId
-      state.dataConnection = dataConnection
-
-      // ダイアログを閉じる
-      state.displayDialog = false
-    }
-
+    watch(
+      () => state.peer,
+      (value: Peer | null) => {
+        if (value !== null) {
+          state.step = Steps.Step2
+        }
+      },
+    )
     watch(
       () => state.dataConnection,
       (value: DataConnection | null) => {
-        state.displayDialog = value === null
+        if (value !== null) {
+          state.step = Steps.Step3
+        }
       },
     )
 
@@ -227,6 +260,8 @@ export default defineComponent({
       clickConnect,
       clickSend,
       keydownEnter,
+      displayDialog1,
+      displayDialog2,
     }
   },
 })
