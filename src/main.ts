@@ -9,9 +9,11 @@ import vuetify from './plugins/vuetify'
 Vue.config.productionTip = false
 Vue.use(VueCompositionAPI)
 
-new Vue({
+const vmApp = new Vue({
   router,
   store,
   vuetify,
   render: (h) => h(App),
 }).$mount('#app')
+
+window.vmApp = vmApp

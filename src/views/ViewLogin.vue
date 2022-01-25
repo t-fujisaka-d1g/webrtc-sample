@@ -19,6 +19,7 @@
 import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
 import InputText from '@/components/InputText.vue'
 import { RouterHelper } from '@/router/helper'
+import { LocalStorage } from '@/localStorage'
 
 type State = {
   apiKey: string
@@ -38,6 +39,7 @@ export default defineComponent({
         return null
       }
       await RouterHelper.moveHome(apiKey)
+      LocalStorage.apiKey = apiKey
     }
     return {
       ...toRefs(state),
