@@ -53,6 +53,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
+          <v-btn text v-on:click="clickCancel">
+            <v-icon left>mdi-close</v-icon>
+            キャンセル
+          </v-btn>
           <v-btn color="primary" text v-bind:disabled="peer !== null" v-on:click="clickDone1">
             <v-icon left>mdi-check</v-icon>
             決定
@@ -104,6 +108,7 @@ import Peer, { DataConnection, PeerConstructorOption, PeerError } from 'skyway-j
 import InputText from '@/components/InputText.vue'
 import { Dialogs } from '@/dialogs'
 import { LocalStorage } from '@/localStorage'
+import { RouterHelper } from '@/router/helper'
 
 const Steps = {
   Step1: 1,
@@ -193,6 +198,10 @@ export default defineComponent({
       await setPeer(peerId)
     }
 
+    const clickCancel = async () => {
+      await RouterHelper.moveHome(props.apiKey)
+    }
+
     const clickConnect = async () => {
       const peer = state.peer
       const toPeerId = state.toPeerId
@@ -265,6 +274,7 @@ export default defineComponent({
     return {
       ...toRefs(state),
       clickDone1,
+      clickCancel,
       clickConnect,
       clickSend,
       keydownEnter,
