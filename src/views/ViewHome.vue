@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="max-width: 600px; margin: auto">
     <template v-for="item in items">
       <v-card v-bind:key="item.key" outlined v-bind:to="item.to" style="margin-bottom: 8px">
         <v-card-title>{{ item.title }}</v-card-title>
