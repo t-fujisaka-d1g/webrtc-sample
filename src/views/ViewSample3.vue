@@ -30,6 +30,13 @@
           <PeerForm v-on:click-done="clickPeer" />
           <RoomForm v-bind:room-name="roomName" v-on:click-join="clickJoin" />
         </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text v-on:click="clickCancel">
+            <v-icon left>mdi-close</v-icon>
+            キャンセル
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
@@ -50,6 +57,7 @@ import CameraSelect from '@/components/CameraSelect.vue'
 import CameraForm from '@/components/CameraForm.vue'
 import { Dialogs } from '@/dialogs'
 import { Env } from '@/env'
+import { RouterHelper } from '@/router/helper'
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type State = {
@@ -224,6 +232,9 @@ export default defineComponent({
 
       state.room = room
     }
+    const clickCancel = async () => {
+      await RouterHelper.moveHome(props.apiKey)
+    }
 
     return {
       ...toRefs(state),
@@ -233,6 +244,7 @@ export default defineComponent({
       clickSend,
       clickChat,
       clickQr,
+      clickCancel,
     }
   },
 })
