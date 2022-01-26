@@ -26,15 +26,19 @@
       <v-card outlined>
         <v-card-title>設定</v-card-title>
         <v-card-text>
-          <CameraForm v-on:click-done="clickCamera" />
-          <PeerForm v-on:click-done="clickPeer" />
-          <RoomForm v-bind:room-name="roomName" v-on:click-join="clickJoin" />
+          <CameraForm v-model="mediaStream" />
+          <PeerForm v-model="peerId" />
+          <RoomForm v-model="localRoomName" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn text v-on:click="clickCancel">
             <v-icon left>mdi-close</v-icon>
             キャンセル
+          </v-btn>
+          <v-btn text color="primary" v-on:click="clickJoin">
+            <v-icon left>mdi-video-outline</v-icon>
+            参加
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -58,9 +62,16 @@ import CameraForm from '@/components/CameraForm.vue'
 import { Dialogs } from '@/dialogs'
 import { Env } from '@/env'
 import { RouterHelper } from '@/router/helper'
+import { RoomName } from '@/models/room'
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+const Steps = {
+  Step1: 1,
+  Step2: 2,
+  Step3: 3,
+} as const
+type Step = typeof Steps[keyof typeof Steps]
 type State = {
+  step: Step
   displayDrawer: boolean
   displayDialog: boolean
   peerId: string | null
@@ -92,6 +103,7 @@ export default defineComponent({
   },
   setup(props: Props) {
     const state = reactive<State>({
+      step: Steps.Step1,
       displayDrawer: true,
       displayDialog: true,
       peerId: null,
@@ -112,23 +124,18 @@ export default defineComponent({
       },
     )
 
-    const clickCamera = async (mediaStream: MediaStream) => {
-      state.mediaStream = mediaStream
-    }
-    const clickPeer = async (peerId: string) => {
-      await initPeer(peerId)
-    }
-
-    const clickJoin = async (roomName: string) => {
-      const peer = state.peer
-      const mediaStream = state.mediaStream
-      if (peer === null) {
-        alert('ERROR')
+    const clickJoin = async () => {
+      const peerId = state.peerId
+      if (peerId === null) {
         return
       }
 
-      await joinRoom(peer, roomName, mediaStream)
-      state.localRoomName = roomName
+      if (state.localRoomName === null) {
+        state.localRoomName = RoomName.create()
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
+
+      await initPeer(peerId)
     }
 
     const clickSend = async (text: string) => {
@@ -179,9 +186,8 @@ export default defineComponent({
       })
       peer.on('error', (err: PeerError) => {
         console.info(`peer: error > ${JSON.stringify(err)}`)
+        Dialogs.showError(err.message)
       })
-
-      state.peer = peer
     }
 
     /**
@@ -197,6 +203,7 @@ export default defineComponent({
       })
       room.on('open', () => {
         console.log('room > open')
+        state.room = room
       })
       room.on('peerJoin', (peerId: string) => {
         Snackbars.show(`'${peerId}'が参加しました`)
@@ -229,17 +236,34 @@ export default defineComponent({
       room.on('close', () => {
         console.log('room > close')
       })
-
-      state.room = room
+      room.on('error', (err: PeerError) => {
+        Dialogs.showError(err.message)
+      })
     }
     const clickCancel = async () => {
       await RouterHelper.moveHome(props.apiKey)
     }
+    watch(
+      () => state.peer,
+      (value: Peer | null) => {
+        if (value !== null) {
+          state.step = Steps.Step2
+          const roomName = state.localRoomName ?? RoomName.create()
+          joinRoom(value, roomName, state.mediaStream)
+        }
+      },
+    )
+    watch(
+      () => state.room,
+      (value: MeshRoom | null) => {
+        if (value !== null) {
+          state.step = Steps.Step3
+        }
+      },
+    )
 
     return {
       ...toRefs(state),
-      clickCamera,
-      clickPeer,
       clickJoin,
       clickSend,
       clickChat,

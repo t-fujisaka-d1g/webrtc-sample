@@ -1,57 +1,39 @@
 <template>
-  <div class="room-form">
-    <div class="room-form__row">
-      <InputText v-model="peerId" label="PeerID" icon="mdi-account" placeholder="PeerIDを入力" />
-      <v-btn text color="primary" v-bind:disabled="peerId === null" v-on:click="clickDone">
-        決定
-      </v-btn>
-    </div>
-  </div>
+  <InputText v-model="peerId" label="PeerID" icon="mdi-account" placeholder="PeerIDを入力" />
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, SetupContext, toRefs } from '@vue/composition-api'
+import { computed, defineComponent, reactive, SetupContext, toRefs } from '@vue/composition-api'
 import InputText from '@/components/InputText.vue'
 
-type State = {
-  peerId: string | null
+type Value = string | null
+type State = {}
+type Props = {
+  value: Value
 }
 export default defineComponent({
   components: { InputText },
-  emits: ['click-done'],
-  setup(_: unknown, context: SetupContext) {
-    const state = reactive<State>({
-      peerId: null,
-    })
+  emits: ['input'],
+  setup(props: Props, context: SetupContext) {
+    const state = reactive<State>({})
 
-    const emitClickDone = (peerId: string) => {
-      context.emit('click-done', peerId)
+    const emitInput = (value: Value) => {
+      context.emit('input', value)
     }
-    const clickDone = async () => {
-      const peerId = state.peerId
-      if (peerId === null) {
-        return
-      }
-      emitClickDone(peerId)
-    }
+
+    const peerId = computed<Value>({
+      get: () => props.value,
+      set: (value: Value) => {
+        emitInput(value)
+      },
+    })
 
     return {
       ...toRefs(state),
-      clickDone,
+      peerId,
     }
   },
 })
 </script>
 
-<style lang="scss" scoped>
-.room-form {
-  display: flex;
-  flex-direction: column;
-  .room-form__row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 4px 0px;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

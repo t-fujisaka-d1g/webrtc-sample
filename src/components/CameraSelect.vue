@@ -49,15 +49,19 @@ export default defineComponent({
       console.log(`devices: ${JSON.stringify(devices, null, '  ')}`)
 
       state.items.splice(0)
+
       state.items.push({ value: null, text: '選択されていません' })
-      state.items.push(
-        ...devices.map((v) => {
-          return {
-            value: v.deviceId,
-            text: v.label,
-          }
-        }),
-      )
+      if (state.items.length > 0) {
+        state.items.push({ divider: true })
+        state.items.push(
+          ...devices.map((v) => {
+            return {
+              value: v.deviceId,
+              text: v.label,
+            }
+          }),
+        )
+      }
 
       if (devices.length > 0) {
         localValue.value = devices[0].deviceId

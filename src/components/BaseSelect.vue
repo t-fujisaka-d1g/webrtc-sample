@@ -1,25 +1,31 @@
 <template>
-  <v-select
-    v-model="localValue"
-    dense
-    v-bind:items="items"
-    hide-details
-    v-bind:label="label"
-    outlined
-    v-bind:prepend-inner-icon="icon"
-  />
+  <div class="base-select">
+    <v-select
+      v-model="localValue"
+      dense
+      v-bind:items="items"
+      hide-details
+      v-bind:label="label"
+      outlined
+      v-bind:prepend-inner-icon="icon"
+    />
+  </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, SetupContext } from '@vue/composition-api'
 
-export type BaseSelectItem = {
-  text: string | number | unknown
-  value: string | number | unknown | null
-  disabled?: boolean
-  divider?: boolean
-  header?: string
-}
+export type BaseSelectItem =
+  | {
+      text: string | number | unknown
+      value: string | number | unknown | null
+      disabled?: boolean
+      divider?: boolean
+      header?: string
+    }
+  | {
+      divider: true
+    }
 type Value = string | null | unknown
 type Props = {
   value: Value
@@ -53,4 +59,9 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.base-select {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+</style>
