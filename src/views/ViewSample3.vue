@@ -153,7 +153,7 @@ export default defineComponent({
     const clickQr = async () => {
       const roomName = state.localRoomName
       if (roomName === null) {
-        await Dialogs.showError('')
+        await Dialogs.showError('QRコードの生成に失敗しました。')
         return
       }
       const shareUrl = Env.calcSample3ShareUrl(props.apiKey, roomName)

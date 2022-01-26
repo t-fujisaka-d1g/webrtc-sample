@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import DialogError from '@/components/DialogError.vue'
+import DialogShareUrl from '@/components/DialogShareUrl.vue'
 
 export class Dialogs {
   static async showError(message: string): Promise<void> {
