@@ -59,7 +59,9 @@ export default defineComponent({
         }),
       )
 
-      localValue.value = devices[0].deviceId
+      if (devices.length > 0) {
+        localValue.value = devices[0].deviceId
+      }
     }
 
     return {
