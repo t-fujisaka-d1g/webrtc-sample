@@ -1,0 +1,111 @@
+<template>
+  <div class="video-previews">
+    <template v-for="mediaStream in mediaStreams">
+      <div v-bind:key="mediaStream.peerId" class="video-previews__col" v-bind:style="styleObject">
+        <RoomVideo v-bind:media-stream="mediaStream" v-bind:label="mediaStream.peerId" />
+      </div>
+    </template>
+
+    <div class="video-previews__mini">
+      <RoomVideo v-bind:media-stream="mediaStream" />
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent } from '@vue/composition-api'
+import RoomVideo from '@/components/RoomVideo.vue'
+
+type Props = {
+  mediaStream: MediaStream | null
+  mediaStreams: MediaStream[]
+}
+export default defineComponent({
+  components: { RoomVideo },
+  props: {
+    mediaStream: { type: MediaStream, default: null },
+    mediaStreams: { type: Array, required: true },
+  },
+  setup(props: Props) {
+    const styleObject = computed(() => {
+      let xNum = 1
+      let yNum = 1
+      switch (props.mediaStreams.length) {
+        case 1:
+          xNum = 1
+          yNum = 1
+          break
+        case 2:
+          xNum = 2
+          yNum = 1
+          break
+        case 3:
+        case 4:
+          xNum = 2
+          yNum = 2
+          break
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+          xNum = 3
+          yNum = 3
+          break
+        case 10:
+        case 11:
+        case 12:
+          xNum = 3
+          yNum = 4
+          break
+        case 13:
+        case 14:
+        case 15:
+        case 16:
+          xNum = 4
+          yNum = 4
+          break
+      }
+      return {
+        width: `${100 / xNum}%`,
+        height: `${100 / yNum}%`,
+      }
+    })
+    return {
+      styleObject,
+    }
+  },
+})
+</script>
+
+<style lang="scss" scoped>
+.video-previews {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  align-content: flex-start;
+  background: black;
+
+  .video-previews__col {
+    width: 33%;
+    height: 33%;
+    box-sizing: border-box;
+  }
+
+  .video-previews__mini {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    max-width: 200px;
+    width: 50vw;
+    border: 1px solid white;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+}
+</style>

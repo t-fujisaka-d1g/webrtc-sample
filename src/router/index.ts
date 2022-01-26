@@ -46,11 +46,12 @@ const routes: Array<RouteConfig> = [
     }),
   },
   {
-    path: '/:apiKey/sample3',
+    path: '/:apiKey/sample3/:roomName?',
     name: RouteNames.Sample3,
     component: () => import(/* webpackChunkName: "sample3" */ '../views/ViewSample3.vue'),
     props: (route: Route) => ({
       apiKey: route.params.apiKey,
+      roomName: route.params.roomName ?? null,
     }),
   },
   {
