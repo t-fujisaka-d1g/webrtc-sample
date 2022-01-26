@@ -11,4 +11,11 @@ export class Env {
     }
     return `https://github.com/t-fujisaka-d1g/webrtc-sample/commit/${this.commitHash}`
   }
+  static get gitHubPagesUrl(): string {
+    return 'https://t-fujisaka-d1g.github.io/webrtc-sample'
+  }
+
+  static calcSample2ShareUrl(apiKey: string, peerId: string): string {
+    return `${this.gitHubPagesUrl}/${apiKey}/sample2/${peerId}`
+  }
 }

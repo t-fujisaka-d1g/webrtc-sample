@@ -30,10 +30,19 @@ const routes: Array<RouteConfig> = [
   },
   {
     path: '/:apiKey/sample2',
-    name: RouteNames.Sample2,
-    component: () => import(/* webpackChunkName: "sample2" */ '../views/ViewSample2.vue'),
+    name: RouteNames.Sample2a,
+    component: () => import(/* webpackChunkName: "sample2" */ '../views/ViewSample2a.vue'),
     props: (route: Route) => ({
       apiKey: route.params.apiKey,
+    }),
+  },
+  {
+    path: '/:apiKey/sample2/:peerId',
+    name: RouteNames.Sample2b,
+    component: () => import(/* webpackChunkName: "sample2" */ '../views/ViewSample2b.vue'),
+    props: (route: Route) => ({
+      apiKey: route.params.apiKey,
+      peerId: route.params.peerId,
     }),
   },
   {

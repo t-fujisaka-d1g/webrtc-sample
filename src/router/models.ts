@@ -4,7 +4,8 @@ export const RouteNames = {
   Login: 'Login',
   Home: 'Home',
   Sample1: 'Sample1',
-  Sample2: 'Sample2',
+  Sample2a: 'Sample2a',
+  Sample2b: 'Sample2b',
   Sample3: 'Sample3',
 } as const
 export type RouteName = typeof RouteNames[keyof typeof RouteNames]
@@ -31,11 +32,20 @@ export class RouteLocations {
       },
     }
   }
-  static toSample2(apiKey: string): Location {
+  static toSample2a(apiKey: string): Location {
     return {
-      name: RouteNames.Sample2,
+      name: RouteNames.Sample2a,
       params: {
         apiKey: apiKey,
+      },
+    }
+  }
+  static toSample2b(apiKey: string, peerId: string): Location {
+    return {
+      name: RouteNames.Sample2b,
+      params: {
+        apiKey: apiKey,
+        peerId: peerId,
       },
     }
   }

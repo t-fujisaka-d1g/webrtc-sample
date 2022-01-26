@@ -13,6 +13,7 @@ export class Sample {
   get isDisplay(): boolean {
     switch (this.id) {
       case SampleIds.One:
+      case SampleIds.Two:
         return true
       default:
         return false
@@ -36,7 +37,7 @@ export class Sample {
       case 1:
         return RouteLocations.toSample1(apiKey)
       case 2:
-        return RouteLocations.toSample2(apiKey)
+        return RouteLocations.toSample2a(apiKey)
       case 3:
         return RouteLocations.toSample3(apiKey)
     }
