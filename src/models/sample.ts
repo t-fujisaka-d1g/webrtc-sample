@@ -14,6 +14,7 @@ export class Sample {
     switch (this.id) {
       case SampleIds.One:
       case SampleIds.Two:
+      case SampleIds.Three:
         return true
       default:
         return false
